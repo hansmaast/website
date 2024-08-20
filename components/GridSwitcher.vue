@@ -3,29 +3,45 @@ import { pickRandomItemsFromArray } from '~/utils/pickRandomItemsFromArray'
 
 const props = withDefaults(defineProps<{
   items: string[]
-  shuffleSpeedInMs: number
+  shuffleSpeedInMs?: number
+  displayNumberOfItems?: number
 }>(), {
   shuffleSpeedInMs: 3000,
+  displayNumberOfItems: 9,
 })
 
 const displayedItems = ref<string[]>([])
 
-function updateDisplayedItems(index: number) {
-  const newItems = pickRandomItemsFromArray<string>(props.items, 9)
-  let newItem = newItems[index]
+const getRandomIndex = (arr: string[]) => Math.floor(Math.random() * arr.length)
+
+const getRandomItems = () => pickRandomItemsFromArray(props.items, props.displayNumberOfItems)
+
+function replaceItemAt(index: number) {
+  let newItem = props.items[index]
   while (displayedItems.value.includes(newItem)) {
-    newItem = newItems[Math.floor(Math.random() * newItems.length)]
+    newItem = props.items[getRandomIndex(props.items)]
   }
   displayedItems.value[index] = newItem
 }
 
 onMounted(() => {
-  displayedItems.value = pickRandomItemsFromArray(props.items, 9)
+  displayedItems.value = getRandomItems()
+
+  const usedIndexes = new Set<number>()
 
   const interval = setInterval(() => {
-    const currentIndex = Math.floor(Math.random() * displayedItems.value.length)
-    updateDisplayedItems(currentIndex)
+    let randomIndex = getRandomIndex(displayedItems.value)
+
+    if (usedIndexes.size === displayedItems.value.length)
+      usedIndexes.clear()
+
+    while (usedIndexes.has(randomIndex))
+      randomIndex = getRandomIndex(displayedItems.value)
+
+    usedIndexes.add(randomIndex)
+    replaceItemAt(randomIndex)
   }, props.shuffleSpeedInMs)
+
   onUnmounted(() => clearInterval(interval))
 })
 </script>
