@@ -1,4 +1,4 @@
-export const technologiesIKnow: string[] = [
+export const thingsIDo: string[] = [
   'JavaScript',
   'TypeScript',
   'CSS',
@@ -13,12 +13,14 @@ export const technologiesIKnow: string[] = [
   'Git',
   'GitHub',
   'GitLab',
+  'Bitbucket',
   'Figma',
   'Bun',
   'Npm',
   'Yarn',
   'pnpm',
-  'Bitbucket',
   'Jira',
   'CI / CD',
+  'a11y',
+  'SEO',
 ].map(technology => technology.toLowerCase())
