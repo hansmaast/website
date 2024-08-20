@@ -3,9 +3,9 @@ import { pickRandomItemsFromArray } from '~/utils/pickRandomItemsFromArray'
 
 const props = withDefaults(defineProps<{
   items: string[]
-  rolling: boolean
+  shuffleSpeedInMs: number
 }>(), {
-  rolling: false,
+  shuffleSpeedInMs: 3000,
 })
 
 const displayedItems = ref<string[]>([])
@@ -21,26 +21,51 @@ function updateDisplayedItems(index: number) {
 
 onMounted(() => {
   displayedItems.value = pickRandomItemsFromArray(props.items, 9)
-  let currentIndex = 0
+
   const interval = setInterval(() => {
+    const currentIndex = Math.floor(Math.random() * displayedItems.value.length)
     updateDisplayedItems(currentIndex)
-    if (props.rolling)
-      currentIndex = (currentIndex + 1) % 9
-    else
-      currentIndex = Math.floor(Math.random() * displayedItems.value.length)
-  }, 700)
+  }, props.shuffleSpeedInMs)
   onUnmounted(() => clearInterval(interval))
 })
 </script>
 
 <template>
-  <div class="grid grid-cols-3 gap-0 justify-items-stretch w-full">
+  <TransitionGroup
+    tag="figure"
+    name="bounce"
+    class="grid grid-cols-3 gap-2 justify-items-stretch w-full"
+  >
     <figure
       v-for="item in displayedItems"
       :key="item"
       class="bg-amber-300 text-center p-4 border border-b-amber-100"
     >
-      {{ item }}
+      <span :key="item">
+        {{ item }}
+      </span>
     </figure>
-  </div>
+  </TransitionGroup>
 </template>
+
+<style scoped>
+.bounce-enter-active {
+  animation: bounce-in 0.9s;
+}
+.bounce-leave-active {
+  animation: bounce-in 0.9s reverse;
+  position: absolute;
+  opacity: 0;
+}
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+</style>
