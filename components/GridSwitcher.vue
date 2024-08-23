@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { pickRandomItemsFromArray } from '~/utils/pickRandomItemsFromArray'
+import { getRandomItems } from '~/utils/getRandomItems'
 
 const props = withDefaults(defineProps<{
   items: string[]
@@ -8,44 +8,33 @@ const props = withDefaults(defineProps<{
   changeNumberOfItems?: number
 }>(), {
   shuffleSpeedInMs: 3000,
-  displayNumberOfItems: 9,
-  changeNumberOfItems: 4,
+  displayNumberOfItems: 4,
+  changeNumberOfItems: 1,
 })
 
-const displayedItems = ref<string[]>([])
-
-const getRandomIndex = (arr: string[]) => Math.floor(Math.random() * arr.length)
-
-const getRandomItems = () => pickRandomItemsFromArray(props.items, props.displayNumberOfItems)
-
-function replaceItemAt(index: number) {
-  let newItem = props.items[getRandomIndex(props.items)]
-  while (displayedItems.value.includes(newItem))
-    newItem = props.items[getRandomIndex(props.items)]
-  displayedItems.value[index] = newItem
-}
+const initialItems = getRandomItems(props.items, props.displayNumberOfItems)
+const itemsToDisplay = ref(initialItems)
+const itemsAlreadyDisplayed = reactive(new Set(initialItems))
+const remainingItems = computed(() => props.items.filter(item => !itemsAlreadyDisplayed.has(item)))
+const newItemsThatHaveNotBeenDisplayed = computed(() => getRandomItems(remainingItems.value, props.changeNumberOfItems))
+watchEffect(() => {
+  console.log('itemsAlreadyDisplayed', itemsAlreadyDisplayed)
+  console.log('remainingItems', remainingItems.value)
+  console.log('newItemsThatHaveNotBeenDisplayed', newItemsThatHaveNotBeenDisplayed.value)
+})
 
 onMounted(() => {
-  displayedItems.value = getRandomItems()
-
-  const usedIndexes = new Set<number>()
-
-  const updateItem = () => {
-    let randomIndex = getRandomIndex(displayedItems.value)
-    if (usedIndexes.size === displayedItems.value.length)
-      usedIndexes.clear()
-    while (usedIndexes.has(randomIndex))
-      randomIndex = getRandomIndex(displayedItems.value)
-    usedIndexes.add(randomIndex)
-    replaceItemAt(randomIndex)
-  }
-
   const interval = setInterval(() => {
-    for (let i = 0; i < props.changeNumberOfItems; i++)
-      updateItem()
+    newItemsThatHaveNotBeenDisplayed.value.forEach(item => itemsAlreadyDisplayed.add(item))
+    if (itemsAlreadyDisplayed.size === props.items.length) {
+      itemsAlreadyDisplayed.clear()
+      itemsToDisplay.value.forEach(item => itemsAlreadyDisplayed.add(item))
+    }
   }, props.shuffleSpeedInMs)
 
-  onUnmounted(() => clearInterval(interval))
+  onBeforeUnmount(() => {
+    clearInterval(interval)
+  })
 })
 </script>
 
@@ -56,7 +45,7 @@ onMounted(() => {
     class="grid grid-cols-3 gap-2 justify-items-stretch w-full"
   >
     <figure
-      v-for="item in displayedItems"
+      v-for="item in itemsToDisplay"
       :key="item"
       class="bg-amber-300 text-center p-4 border border-b-amber-100"
     >
