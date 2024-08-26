@@ -1,76 +1,56 @@
 <script lang="ts" setup>
-import { getRandomItems } from '~/utils/getRandomItems'
+import type { RandomizerOptions } from '~/composables/useRandomizer'
+import { userRandomizer } from '~/composables/useRandomizer'
 
-const props = withDefaults(defineProps<{
+const { items, options, cols } = withDefaults(defineProps<{
   items: string[]
-  shuffleSpeedInMs?: number
-  displayNumberOfItems?: number
-  changeNumberOfItems?: number
+  options?: Partial<RandomizerOptions>
+  cols?: number
 }>(), {
-  shuffleSpeedInMs: 3000,
-  displayNumberOfItems: 4,
-  changeNumberOfItems: 1,
+  cols: 5,
 })
 
-const initialItems = getRandomItems(props.items, props.displayNumberOfItems)
-const itemsToDisplay = ref(initialItems)
-const itemsAlreadyDisplayed = reactive(new Set(initialItems))
-const remainingItems = computed(() => props.items.filter(item => !itemsAlreadyDisplayed.has(item)))
-const newItemsThatHaveNotBeenDisplayed = computed(() => getRandomItems(remainingItems.value, props.changeNumberOfItems))
-watchEffect(() => {
-  console.log('itemsAlreadyDisplayed', itemsAlreadyDisplayed)
-  console.log('remainingItems', remainingItems.value)
-  console.log('newItemsThatHaveNotBeenDisplayed', newItemsThatHaveNotBeenDisplayed.value)
-})
-
-onMounted(() => {
-  const interval = setInterval(() => {
-    newItemsThatHaveNotBeenDisplayed.value.forEach(item => itemsAlreadyDisplayed.add(item))
-    if (itemsAlreadyDisplayed.size === props.items.length) {
-      itemsAlreadyDisplayed.clear()
-      itemsToDisplay.value.forEach(item => itemsAlreadyDisplayed.add(item))
-    }
-  }, props.shuffleSpeedInMs)
-
-  onBeforeUnmount(() => {
-    clearInterval(interval)
-  })
-})
+const { visibleItems, randomizeVisibleItems } = userRandomizer<typeof items[0]>(items, options)
 </script>
 
 <template>
   <TransitionGroup
     tag="figure"
     name="bounce"
-    class="grid grid-cols-3 gap-2 justify-items-stretch w-full"
+    :class="`grid grid-cols-${cols}`"
   >
-    <figure
-      v-for="item in itemsToDisplay"
+    <span
+      v-for="item in visibleItems"
       :key="item"
-      class="bg-amber-300 text-center p-4 border border-b-amber-100"
+      class="bg-amber-300 text-center p-4 border border-b-amber-100  flex items-center justify-center"
     >
-      <span :key="item">
-        {{ item }}
-      </span>
-    </figure>
+      {{ item }}
+    </span>
   </TransitionGroup>
+  <button
+    class="mt-4"
+    @click="randomizeVisibleItems"
+  >
+    Shuffle
+  </button>
 </template>
 
 <style scoped>
 .bounce-enter-active {
-  animation: bounce-in 0.9s;
+  animation: bounce-in 0.6s;
 }
 .bounce-leave-active {
-  animation: bounce-in 0.9s reverse;
+  animation: bounce-in 0.6s reverse;
   position: absolute;
   opacity: 0;
 }
+
 @keyframes bounce-in {
   0% {
-    transform: scale(0);
+    transform: scale(1);
   }
   50% {
-    transform: scale(1.15);
+    transform: scale(0.5);
   }
   100% {
     transform: scale(1);
