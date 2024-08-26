@@ -1,23 +1,22 @@
 <script lang="ts" setup>
 import type { RandomizerOptions } from '~/composables/useRandomizer'
-import { userRandomizer } from '~/composables/useRandomizer'
+import { useRandomizer } from '~/composables/useRandomizer'
 
 const { items, options, cols } = withDefaults(defineProps<{
   items: string[]
   options?: Partial<RandomizerOptions>
   cols?: number
 }>(), {
-  cols: 5,
+  cols: 2,
 })
-
-const { visibleItems, randomizeVisibleItems } = userRandomizer<typeof items[0]>(items, options)
+const { visibleItems, randomizeVisibleItems } = useRandomizer<typeof items[0]>(items, options)
 </script>
 
 <template>
   <TransitionGroup
     tag="figure"
     name="bounce"
-    :class="`grid grid-cols-${cols}`"
+    :class="`grid gap-4 w-full h-full`"
   >
     <span
       v-for="item in visibleItems"
@@ -36,6 +35,9 @@ const { visibleItems, randomizeVisibleItems } = userRandomizer<typeof items[0]>(
 </template>
 
 <style scoped>
+figure {
+  grid-template-columns: repeat(v-bind(cols), 1fr);
+}
 .bounce-enter-active {
   animation: bounce-in 0.6s;
 }
