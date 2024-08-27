@@ -2,13 +2,27 @@ import type { UnwrapRefSimple } from '@vue/reactivity'
 import { getRandomItems } from '~/utils/getRandomItems'
 import { getUniqueIndex } from '~/utils/getUniqueIndex'
 import { getDifference } from '~/utils/getDifference'
+import { sleep } from '~/utils/sleep'
 
-type Options = { displayCount: number, changeCount: number, intervalMs: number }
-export type { Options as RandomizerOptions }
+type Options = {
+  displayCount: number
+  changeCount: number
+  intervalMs: number
+  staggerCount: number
+  staggerIntervalMs: number
+  shuffleStaggerMs: number
+}
 
-const defaultOptions: Options = { displayCount: 4, changeCount: 1, intervalMs: 1000 }
+const defaultOptions: Options = {
+  displayCount: 4,
+  changeCount: 1,
+  intervalMs: 1000,
+  staggerCount: 3,
+  staggerIntervalMs: 100,
+  shuffleStaggerMs: 150,
+}
 
-export function useRandomizer<T>(items: T[], options?: Partial<Options>) {
+function useRandomizer<T>(items: T[], options: Options) {
   options = { ...defaultOptions, ...options }
 
   if (items.length <= options.displayCount)
@@ -21,47 +35,69 @@ export function useRandomizer<T>(items: T[], options?: Partial<Options>) {
 
   const visibleItems = ref<T[]>(getRandomItems(items, displayCount))
 
-  let previouslyDisplayedItems: T[] = visibleItems.value.slice() as T[]
-
   let insertedIndexes: number[] = []
   const getAndUpdateUniqueIndex = (): number => {
     if (insertedIndexes.length === displayCount)
-      insertedIndexes = insertedIndexes.slice(-changeCount)
+      insertedIndexes = []
     const uniqueIndex = getUniqueIndex(insertedIndexes, displayCount)
     insertedIndexes.push(uniqueIndex)
     return uniqueIndex
   }
 
+  let previouslyDisplayedItems: T[] = visibleItems.value.slice() as T[]
+  const updateVisibleItems = (newItem: T) => {
+    const uniqueIndex = getAndUpdateUniqueIndex()
+    const newVisibleItems = visibleItems.value.toSpliced(uniqueIndex, 1, newItem as UnwrapRefSimple<T>)
+    if (previouslyDisplayedItems.length === items.length)
+      previouslyDisplayedItems = newVisibleItems as T[]
+    else
+      previouslyDisplayedItems.push(newItem)
+    visibleItems.value = newVisibleItems
+  }
+
   const getRemainingItems = (): T[] => {
     let remainingItems = getDifference(items, previouslyDisplayedItems)
-    if (remainingItems.length < changeCount!)
+    if (remainingItems.length < changeCount)
       remainingItems = getDifference(items, visibleItems.value as T[])
     return remainingItems
   }
 
   const randomizeVisibleItems = () => {
     const remainingItems = getRemainingItems()
-    getRandomItems(remainingItems, changeCount!).forEach((newItem) => {
-      const uniqueIndex = getAndUpdateUniqueIndex()
-      const newVisibleItems = visibleItems.value.toSpliced(uniqueIndex, 1, newItem as UnwrapRefSimple<T>)
-      if (previouslyDisplayedItems.length === items.length)
-        previouslyDisplayedItems = newVisibleItems as T[]
-      else
-        previouslyDisplayedItems.push(newItem)
-      visibleItems.value = newVisibleItems
-    })
+    getRandomItems(remainingItems, changeCount).forEach(updateVisibleItems)
   }
 
-  const setAndClearInterval = () => {
-    if (intervalMs! <= 0)
+  const constructDelay = async () => {
+    if (!options.staggerCount || !options.staggerIntervalMs) return
+    for (let i = 0; i < options.staggerCount; i++) {
+      randomizeVisibleItems()
+      await sleep((options.staggerIntervalMs + ((i * 0.5) * options.shuffleStaggerMs)) || 0)
+    }
+  }
+
+  const handleRandomization = async () => {
+    if (options.staggerCount && options.staggerIntervalMs)
+      await constructDelay()
+    else
+      randomizeVisibleItems()
+  }
+
+  let interval: NodeJS.Timeout
+  const handleMount = async () => {
+    await handleRandomization()
+    if (intervalMs <= 0)
       return
-    const interval = setInterval(randomizeVisibleItems, intervalMs)
-    onBeforeUnmount(() => {
-      clearInterval(interval)
-    })
+    else
+      interval = setInterval(handleRandomization, intervalMs)
   }
 
-  onMounted(setAndClearInterval)
+  const handleUnmount = () => clearInterval(interval)
+
+  onMounted(handleMount)
+  onBeforeUnmount(handleUnmount)
 
   return { visibleItems, randomizeVisibleItems }
 }
+
+export { useRandomizer }
+export type { Options as RandomizerOptions }
