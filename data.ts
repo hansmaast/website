@@ -24,7 +24,6 @@ export const thingsIDo: string[] = [
   'Node.js',
   'Express',
   'Cms',
-  'Headless',
   'Sanity',
   'Ibexa',
   'Npm',

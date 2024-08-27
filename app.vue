@@ -10,12 +10,13 @@ import { thingsIDo } from '~/data.js'
     </h1>
     <GridSwitcher
       :items="thingsIDo"
+      :cols="4"
       :options="{
-        intervalMs: 3000,
+        intervalMs: 3500,
         changeCount: 1,
-        displayCount: 6,
-        staggerCount: 6,
-        shuffleStaggerMs: 200,
+        displayCount: 8,
+        staggerCount: 8,
+        shuffleStaggerMs: 66,
         staggerIntervalMs: 100 }"
     />
   </div>
