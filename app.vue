@@ -4,7 +4,7 @@ import { thingsIDo } from '~/data.js'
 
 <template>
   <NuxtRouteAnnouncer />
-  <div class="bg-amber-100 w-dvw h-dvh grid gap-4 place-content-center place-items-center">
+  <div class="bg-orange-50 w-dvw h-dvh grid gap-4 place-content-center place-items-center">
     <h1 class="text-4xl">
       Hi there. I'm Hans. A front-end developer.
     </h1>
@@ -12,7 +12,7 @@ import { thingsIDo } from '~/data.js'
       :items="thingsIDo"
       :cols="4"
       :options="{
-        intervalMs: 3500,
+        intervalMs: 5500,
         changeCount: 1,
         displayCount: 8,
         staggerCount: 8,

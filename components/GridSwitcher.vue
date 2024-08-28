@@ -21,7 +21,7 @@ const { visibleItems } = useRandomizer<typeof items[0]>(items, options)
     <span
       v-for="(item) in visibleItems"
       :key="item"
-      class="bg-amber-300 text-center p-4 border border-b-amber-100  flex items-center justify-center"
+      class="text-orange-950 rounded-xl text-center p-4 border border-b-amber-100  flex items-center justify-center"
     >
       {{ item }}
     </span>
