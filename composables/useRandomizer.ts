@@ -11,6 +11,7 @@ type Options = {
   staggerCount: number
   staggerIntervalMs: number
   shuffleStaggerMs: number
+  onUpdate: () => void
 }
 
 const defaultOptions: Options = {
@@ -20,6 +21,7 @@ const defaultOptions: Options = {
   staggerCount: 3,
   staggerIntervalMs: 100,
   shuffleStaggerMs: 150,
+  onUpdate: () => {},
 }
 
 function useRandomizer<T>(items: T[], options: Options) {
@@ -46,6 +48,7 @@ function useRandomizer<T>(items: T[], options: Options) {
 
   let previouslyDisplayedItems: T[] = visibleItems.value.slice() as T[]
   const updateVisibleItems = (newItem: T) => {
+    options.onUpdate()
     const uniqueIndex = getAndUpdateUniqueIndex()
     const newVisibleItems = visibleItems.value.toSpliced(uniqueIndex, 1, newItem as UnwrapRefSimple<T>)
     if (previouslyDisplayedItems.length === items.length)
@@ -85,10 +88,7 @@ function useRandomizer<T>(items: T[], options: Options) {
   let interval: NodeJS.Timeout
   const handleMount = async () => {
     await handleRandomization()
-    if (intervalMs <= 0)
-      return
-    else
-      interval = setInterval(handleRandomization, intervalMs)
+    interval = setInterval(handleRandomization, intervalMs)
   }
 
   const handleUnmount = () => clearInterval(interval)
