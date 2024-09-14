@@ -10,7 +10,7 @@ const { audioCtx, enableAudio, randomizeFrequency } = useAudio()
   <div class="bg-orange-50 w-dvw h-dvh grid gap-4 place-content-center place-items-center">
     <template v-if="!audioCtx">
       <button
-        class="bg-amber-500 text-white p-2 rounded-lg"
+        class="bg-orange-950 text-orange-50 rounded-xl p-4 "
         @click="enableAudio"
       >
         enable audio
@@ -28,8 +28,8 @@ const { audioCtx, enableAudio, randomizeFrequency } = useAudio()
           changeCount: 1,
           displayCount: 10,
           staggerCount: 8,
-          shuffleStaggerMs: 10,
-          staggerIntervalMs: (4200 / 16),
+          shuffleStaggerMs: 40,
+          staggerIntervalMs: (4200 / (8 * 6)),
           onUpdate: () => randomizeFrequency(),
 
         }"

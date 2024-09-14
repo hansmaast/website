@@ -21,7 +21,7 @@ const { visibleItems } = useRandomizer<typeof items[0]>(items, options)
     <span
       v-for="(item) in visibleItems"
       :key="item"
-      class="rounded-xl text-center p-4 border border-b-amber-100  flex items-center justify-center"
+      class="text-orange-950 rounded-xl text-center p-4 border border-b-amber-100  flex items-center justify-center"
     >
       {{ item }}
     </span>
@@ -34,6 +34,11 @@ figure {
 }
 .bounce-enter-active {
   animation: bounce-in 0.35s;
+}
+.bounce-leave-active {
+  animation: bounce-in 0.6s reverse;
+  position: absolute;
+  opacity: 0;
 }
 
 @keyframes bounce-in {

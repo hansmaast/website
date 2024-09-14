@@ -14,13 +14,13 @@ export const useAudio = () => {
 
   const setOscillatorFrequency = (oscillator: OscillatorNode, frequency: number) => {
     if (oscillator && audioCtx.value && gainNode.value) {
-      gainNode.value.gain.setTargetAtTime(1, audioCtx.value.currentTime, 0.04)
+      gainNode.value.gain.setTargetAtTime(1, audioCtx.value.currentTime, 0.025)
       oscillator.frequency.setValueAtTime(frequency, audioCtx.value.currentTime)
-      gainNode.value.gain.setTargetAtTime(0, audioCtx.value.currentTime + 0.2, 0.2)
+      gainNode.value.gain.setTargetAtTime(0, audioCtx.value.currentTime + 0.025, 0.025)
     }
   }
 
-  const generateRandomFrequency = (range = { min: 100, max: 300 }) => {
+  const generateRandomFrequency = (range = { min: 20, max: 1200 }) => {
     return Math.random() * (range.max - range.min) + range.min
   }
 
