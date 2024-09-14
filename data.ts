@@ -40,5 +40,11 @@ export const thingsIDo: string[] = [
   'Husky',
   'Communication',
   'Collaboration',
-
+  'Problem Solving',
+  'Debugging',
+  'Responsive Design',
+  'Accessibility',
+  'Semantics',
+  'Markdown',
+  'Linux',
 ]
