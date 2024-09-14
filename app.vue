@@ -28,8 +28,8 @@ const { audioCtx, enableAudio, randomizeFrequency } = useAudio()
           changeCount: 1,
           displayCount: 10,
           staggerCount: 8,
-          shuffleStaggerMs: 10,
-          staggerIntervalMs: (4200 / 16),
+          shuffleStaggerMs: 40,
+          staggerIntervalMs: (4200 / (8 * 6)),
           onUpdate: () => randomizeFrequency(),
 
         }"
