@@ -22,16 +22,15 @@ const { audioCtx, enableAudio, randomizeFrequency } = useAudio()
       </h1>
       <GridSwitcher
         :items="thingsIDo"
-        :cols="5"
+        :cols="4"
         :options="{
           intervalMs: 4200,
           changeCount: 1,
-          displayCount: 10,
-          staggerCount: 8,
-          shuffleStaggerMs: 40,
-          staggerIntervalMs: (4200 / (8 * 6)),
+          displayCount: 12,
+          staggerCount: 12,
+          shuffleStaggerMs: 55,
+          staggerIntervalMs: 75,
           onUpdate: () => randomizeFrequency(),
-
         }"
       />
     </template>
