@@ -2,13 +2,12 @@
 import type { RandomizerOptions } from '~/composables/useRandomizer'
 import { useRandomizer } from '~/composables/useRandomizer'
 
-const { items, options, cols } = withDefaults(defineProps<{
+const { items, options, cols = 2 } = defineProps<{
   items: string[]
   options: RandomizerOptions
   cols?: number
-}>(), {
-  cols: 2,
-})
+}>()
+
 const { visibleItems } = useRandomizer<typeof items[0]>(items, options)
 </script>
 

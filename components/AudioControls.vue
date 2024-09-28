@@ -11,7 +11,7 @@ import {
 </script>
 
 <template>
-  <Drawer title="Adjust sounds">
+  <Drawer>
     <DrawerTrigger title="Adjust sound">
       <Button
         aria-hidden="true"

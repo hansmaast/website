@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useMediaQuery } from '@vueuse/core'
-import { thingsIDo } from '~/data.js'
+import { thingsIDo } from '~/lib/thingsIDo.js'
 
 const { audio } = useInjections()
 
