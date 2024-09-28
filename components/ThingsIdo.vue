@@ -1,18 +1,21 @@
 <script setup lang="ts">
+import { useMediaQuery } from '@vueuse/core'
 import { thingsIDo } from '~/data.js'
 
-const audio = inject<ReturnType<typeof useAudio>>('audio')
-console.log(audio)
+const { audio } = useInjections()
+
+const isMobile = useMediaQuery('(max-width: 640px)')
+const cols = computed(() => isMobile.value ? 2 : 3)
 </script>
 
 <template>
-  <div class="bg-orange-50 w-dvw h-dvh grid gap-4 place-content-center place-items-center">
-    <h1 class="text-4xl">
+  <div class="w-screen max-w-2xl grid gap-8  p-4">
+    <h1 class="text-4xl place-self-center">
       Some things i do.
     </h1>
     <GridSwitcher
       :items="thingsIDo"
-      :cols="4"
+      :cols="cols"
       :options="{
         intervalMs: 4200,
         changeCount: 1,
@@ -23,5 +26,8 @@ console.log(audio)
         onUpdate: () => audio?.randomizeFrequency(),
       }"
     />
+    <div class="place-self-end">
+      <AudioControls />
+    </div>
   </div>
 </template>

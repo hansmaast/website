@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useAudio } from '~/composables/useAudio'
-import type { EnableAudioAlert } from '#build/components'
 
 const audio = useAudio()
 provide('audio', audio)
@@ -8,6 +7,8 @@ provide('audio', audio)
 
 <template>
   <NuxtRouteAnnouncer />
-  <EnableAudioAlert />
-  <ThingsIdo />
+  <div class="bg-orange-50 w-dvw h-dvh grid place-content-center place-items-center">
+    <EnableAudioAlert />
+    <ThingsIdo />
+  </div>
 </template>
