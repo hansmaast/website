@@ -23,7 +23,7 @@ const cols = computed(() => isMobile.value ? 2 : 3)
         staggerCount: 12,
         shuffleStaggerMs: 55,
         staggerIntervalMs: 75,
-        onUpdate: () => audio?.randomizeFrequency(),
+        onUpdate: () => audio?.randomizeFrequencies(),
       }"
     />
     <div class="place-self-end">
